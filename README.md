@@ -20,6 +20,8 @@ try {
 
 `init({ window })` позволяет передать тестовый объект Window. `getLaunchParams()` должен вызываться внутри iframe. `destroy()` удаляет обработчик сообщений и отклоняет незавершённые запросы.
 
+Полный минимальный пример Plugin UI находится в [examples/basic-usage.ts](examples/basic-usage.ts). Пример вывода информации о текущем пользователе — в [examples/user-info.ts](examples/user-info.ts).
+
 ```ts
 interface LaunchParams {
   call: { id: string; name: string };
