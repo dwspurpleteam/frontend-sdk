@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Сборка и тесты
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Получить исходный код
+        uses: actions/checkout@v4
+
+      - name: Настроить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Установить зависимости
+        run: npm ci
+
+      - name: Собрать пакет
+        run: npm run build
+
+      - name: Запустить тесты
+        run: npm test
