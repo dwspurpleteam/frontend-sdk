@@ -19,19 +19,19 @@ class PluginSdkImpl implements PluginSdk {
     }
     const window = options.window ?? (typeof globalThis.window === 'undefined' ? undefined : globalThis.window);
     if (!window) {
-      this.invalidOptionsMessage = 'Требуется browser window';
+      this.invalidOptionsMessage = 'A browser window is required';
       return;
     }
     if (window.parent === window) {
-      this.invalidOptionsMessage = 'Plugin SDK должен работать внутри iframe';
+      this.invalidOptionsMessage = 'Plugin SDK must run inside an iframe';
       return;
     }
     this.bridge = new Bridge(window, timeoutMs);
   }
 
   public async getLaunchParams(): Promise<LaunchParams> {
-    if (this.destroyed) throw new PluginSdkError('SDK_DESTROYED', 'SDK уже уничтожен');
-    if (!this.bridge) throw new PluginSdkError('INVALID_OPTIONS', this.invalidOptionsMessage ?? 'Некорректные параметры SDK');
+    if (this.destroyed) throw new PluginSdkError('SDK_DESTROYED', 'SDK has already been destroyed');
+    if (!this.bridge) throw new PluginSdkError('INVALID_OPTIONS', this.invalidOptionsMessage ?? 'Invalid SDK options');
 
     const response = await this.bridge.request(this.nextRequestId());
     if (response.type === MESSAGE_TYPES.launchParamsError) {
