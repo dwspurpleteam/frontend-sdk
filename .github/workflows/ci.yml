@@ -26,7 +26,40 @@ jobs:
         run: npm ci
 
       - name: Собрать пакет
-        run: npm run build
+        run: npm run build -- --sdk-version="$(node -p "JSON.parse(require('fs').readFileSync('package.json')).version")"
 
       - name: Запустить тесты
         run: npm test
+
+  publish:
+    name: Публикация npm-пакета
+    needs: build-and-test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Получить исходный код
+        uses: actions/checkout@v4
+
+      - name: Настроить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Установить зависимости
+        run: npm ci
+
+      - name: Подготовить пакет
+        run: |
+          SDK_VERSION="$(node -p "JSON.parse(require('fs').readFileSync('package.json')).version")"
+          BRANCH_NAME="$(printf '%s' "$GITHUB_REF_NAME" | tr '[:upper:]' '[:lower:]' | sed 's#[^a-z0-9._-]#-#g')"
+          PACKAGE_NAME="@dwspurpleteam/plugin-frontend-sdk-${BRANCH_NAME}-${SDK_VERSION}"
+          npm run build -- --sdk-version="$SDK_VERSION" --package-name="$PACKAGE_NAME"
+
+      - name: Опубликовать пакет
+        run: npm publish ./dist --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
