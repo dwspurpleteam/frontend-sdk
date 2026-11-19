@@ -24,6 +24,12 @@ const publishedPackage = {
   description: sourcePackage.description,
   license: sourcePackage.license,
   type: sourcePackage.type,
+  repository: process.env.GITHUB_REPOSITORY
+    ? `https://github.com/${process.env.GITHUB_REPOSITORY}.git`
+    : sourcePackage.repository,
+  publishConfig: {
+    registry: 'https://npm.pkg.github.com'
+  },
   main: 'src/index.js',
   types: 'src/index.d.ts',
   files: ['src', 'README.md'],

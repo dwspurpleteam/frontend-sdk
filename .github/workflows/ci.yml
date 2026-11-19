@@ -38,6 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
 
     steps:
       - name: Получить исходный код
@@ -47,7 +48,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
+          registry-url: https://npm.pkg.github.com
 
       - name: Установить зависимости
         run: npm ci
@@ -60,6 +61,6 @@ jobs:
           npm run build -- --sdk-version="$SDK_VERSION" --package-name="$PACKAGE_NAME"
 
       - name: Опубликовать пакет
-        run: npm publish ./dist --access public
+        run: npm publish ./dist
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
